@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -38,28 +37,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.escola.compose.authorization.R
 import com.escola.compose.authorization.domain.use_case.ValidateLoginDataError
+import com.escola.compose.resource.util.SingleEventEffect
 import com.escola.compose.resource.ui.component.container.LoadingBox
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 @Composable
 fun LoginScreen(
     loginEvent: (LoginEvent) -> Unit,
-    navigationEvent: (LoginNavigationEvent) -> Unit,
+    loginEffect: Flow<LoginEffect>,
+    navigationEvent: (LoginNavigation) -> Unit,
     loginState: LoginState,
 ) {
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
+    SingleEventEffect(sideEffectFlow = loginEffect) { effect ->
+        when (effect) {
+            is LoginEffect.ShowToast -> Toast.makeText(
+                context,
+                effect.message,
+                Toast.LENGTH_SHORT
+            ).show()
 
-    LaunchedEffect(loginState.loginError) {
-        loginState.loginError?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            LoginEffect.UserLogged ->  navigationEvent.invoke(LoginNavigation.NavigateToHome)
         }
     }
 
-    LaunchedEffect(loginState.isLogged) {
-        if (loginState.isLogged) navigationEvent.invoke(LoginNavigationEvent.NavigateToHome)
-    }
 
     LoadingBox(
         isLoading = loginState.isLoading
@@ -83,8 +88,7 @@ fun LoginScreen(
                     fontSize = 30.sp,
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                TextField(modifier = Modifier.fillMaxWidth(),
                     label = { Text(text = stringResource(R.string.login)) },
                     value = loginState.login,
                     isError = loginState.loginDataNotValid is ValidateLoginDataError.LoginError,
@@ -92,9 +96,9 @@ fun LoginScreen(
                         loginEvent.invoke(LoginEvent.LoginChanged(it))
                     },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    keyboardActions = KeyboardActions(
-                        onNext = { focusManager.moveFocus(FocusDirection.Down) }
-                    ),
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    }),
                     supportingText = {
                         if (loginState.loginDataNotValid is ValidateLoginDataError.LoginError) {
                             Text(
@@ -105,35 +109,27 @@ fun LoginScreen(
                         }
                     },
                     trailingIcon = {
-                        if (loginState.loginDataNotValid is ValidateLoginDataError.LoginError)
-                            Icon(
-                                Icons.Filled.Clear,
-                                "error",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                    }
-                )
+                        if (loginState.loginDataNotValid is ValidateLoginDataError.LoginError) Icon(
+                            Icons.Filled.Clear, "error", tint = MaterialTheme.colorScheme.error
+                        )
+                    })
 
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                TextField(modifier = Modifier.fillMaxWidth(),
                     label = { Text(text = stringResource(R.string.password)) },
                     value = loginState.password,
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
                     isError = loginState.loginDataNotValid is ValidateLoginDataError.PasswordError,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
+                        keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
                     ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                            loginEvent.invoke(LoginEvent.LoginUser)
-                        }
-                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        focusManager.clearFocus()
+                        loginEvent.invoke(LoginEvent.LoginUser)
+                    }),
                     onValueChange = {
                         loginEvent.invoke(LoginEvent.PasswordChanged(it))
                     },
@@ -147,21 +143,16 @@ fun LoginScreen(
                         }
                     },
                     trailingIcon = {
-                        if (loginState.loginDataNotValid is ValidateLoginDataError.PasswordError)
-                            Icon(
-                                Icons.Filled.Clear,
-                                "error",
-                                tint = MaterialTheme.colorScheme.error
-                            )
+                        if (loginState.loginDataNotValid is ValidateLoginDataError.PasswordError) Icon(
+                            Icons.Filled.Clear, "error", tint = MaterialTheme.colorScheme.error
+                        )
                     })
-               
+
                 Spacer(modifier = Modifier.height(5.dp))
 
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        loginEvent.invoke(LoginEvent.LoginUser)
-                    }) {
+                Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                    loginEvent.invoke(LoginEvent.LoginUser)
+                }) {
                     Text(text = stringResource(R.string.login_action))
                 }
 
@@ -175,11 +166,9 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        navigationEvent.invoke(LoginNavigationEvent.RegisterClick)
-                    }) {
+                Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                    navigationEvent.invoke(LoginNavigation.RegisterClick)
+                }) {
                     Text(text = stringResource(R.string.register_new_account))
                 }
 
@@ -187,7 +176,7 @@ fun LoginScreen(
 
                 Text(
                     modifier = Modifier.clickable {
-                        navigationEvent.invoke(LoginNavigationEvent.RegulationClick)
+                        navigationEvent.invoke(LoginNavigation.RegulationClick)
                     },
                     style = TextStyle(textAlign = TextAlign.Center),
                     text = stringResource(R.string.regulation)
@@ -200,7 +189,7 @@ fun LoginScreen(
                     .align(Alignment.BottomCenter)
                     .padding(20.dp)
                     .clickable {
-                        navigationEvent.invoke(LoginNavigationEvent.ForgotPasswordClick)
+                        navigationEvent.invoke(LoginNavigation.ForgotPasswordClick)
                     },
                 text = stringResource(R.string.dont_forget_password),
                 style = TextStyle(textAlign = TextAlign.Center)
@@ -212,9 +201,9 @@ fun LoginScreen(
 @Preview
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(
-        loginEvent = {},
+    LoginScreen(loginEvent = {},
         navigationEvent = {},
+        loginEffect = flow {},
         loginState = LoginState(isLoading = false)
     )
 }
@@ -222,9 +211,9 @@ fun LoginScreenPreview() {
 @Preview
 @Composable
 fun LoginScreenLoadingPreview() {
-    LoginScreen(
-        loginEvent = {},
+    LoginScreen(loginEvent = {},
         navigationEvent = {},
+        loginEffect = flow {},
         loginState = LoginState(isLoading = true)
     )
 }

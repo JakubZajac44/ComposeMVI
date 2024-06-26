@@ -1,11 +1,9 @@
 package com.escola.compose.character.presentation.character_list
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,9 +22,6 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,7 +45,7 @@ fun SharedTransitionScope.CharacterListScreen(
     list: LazyPagingItems<CharacterModel>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     characterListEvent: (CharacterListEvent) -> Unit,
-    navigationEvent: (CharacterListNavigationEvent) -> Unit,
+    navigationEvent: (CharacterListEffect) -> Unit,
 ) {
 
     val pullRefreshState = rememberPullRefreshState(state.isRefreshing, {
@@ -105,7 +100,7 @@ fun SharedTransitionScope.CharacterListScreen(
                             backgroundColor = Color(0xFFEBEBF4),
                             characterItemClick = { id, name, image ->
                                 navigationEvent.invoke(
-                                    CharacterListNavigationEvent.OnCharacterDetailsClick(
+                                    CharacterListEffect.OnCharacterDetailsClick(
                                         id.toString(),
                                         name,
                                         image

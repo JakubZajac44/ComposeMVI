@@ -8,13 +8,14 @@ import androidx.navigation.compose.composable
 internal const val LOGIN_ROUTE = "login"
 
 internal fun NavGraphBuilder.loginScreen(
-    navigationEvent: (LoginNavigationEvent) -> Unit
+    navigationEvent: (LoginNavigation) -> Unit
 ) {
     composable(LOGIN_ROUTE) {
         val loginViewModel = hiltViewModel<LoginViewModel>()
         LoginScreen(
             loginEvent = loginViewModel::onEvent,
             navigationEvent = navigationEvent,
+            loginEffect = loginViewModel.effect,
             loginState = loginViewModel.state.collectAsStateWithLifecycle().value
         )
     }

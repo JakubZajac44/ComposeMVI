@@ -9,7 +9,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import java.net.URLDecoder
 
 const val CHARACTER_ID = "characterId"
 const val CHARACTER_NAME = "characterName"
@@ -33,7 +32,7 @@ internal fun NavController.navigateToCharacterScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal fun NavGraphBuilder.characterScreen(
     sharedTransitionScope: SharedTransitionScope,
-    navigationEvent: (CharacterNavigationEvent) -> Unit,
+    navigationEvent: (CharacterEffect) -> Unit,
 ) {
     composable(
         route = CHARACTER_ROUTE,

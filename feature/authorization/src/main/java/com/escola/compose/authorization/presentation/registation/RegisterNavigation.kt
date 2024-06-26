@@ -3,7 +3,7 @@ package com.escola.compose.authorization.presentation.registation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.escola.compose.authorization.presentation.login.LoginNavigationEvent
+import com.escola.compose.authorization.presentation.login.LoginEffect
 
 internal const val REGISTRATION_ROUTE = "registration"
 
@@ -11,7 +11,7 @@ internal fun NavController.navigateToRegistrationScreen() {
     navigate(REGISTRATION_ROUTE)
 }
 internal fun NavGraphBuilder.registrationScreen(
-    navigationEvent: (LoginNavigationEvent) -> Unit,
+    navigationEvent: (LoginEffect) -> Unit,
 ) {
 
     composable(REGISTRATION_ROUTE) {

@@ -1,14 +1,12 @@
 package com.escola.compose.authorization.presentation.login
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escola.compose.authorization.domain.use_case.LoginUserUseCase
 import com.escola.compose.authorization.domain.use_case.ValidateLoginDataError
 import com.escola.compose.authorization.domain.use_case.ValidateLoginDataUseCase
 import com.escola.compose.resource.Resource
+import com.escola.compose.resource.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,12 +15,11 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUserUseCase: LoginUserUseCase,
     private val validateLoginDataUseCase: ValidateLoginDataUseCase
-) : ViewModel() {
+) : BaseViewModel<LoginState, LoginEvent, LoginEffect>(
+    initialState = LoginState()
+) {
 
-    private var _state = MutableStateFlow(LoginState())
-    val state = _state.asStateFlow()
-
-    fun onEvent(event: LoginEvent) {
+    override fun onEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.LoginUser -> loginUser(_state.value.login, _state.value.password)
             is LoginEvent.LoginChanged -> _state.update { loginState ->
@@ -73,13 +70,7 @@ class LoginViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            _state.update { loginState ->
-                                loginState.copy(
-                                    loginError = null,
-                                    isLoading = false,
-                                    isLogged = true
-                                )
-                            }
+                            sendEffect(LoginEffect.UserLogged)
                         }
                     }
                 }

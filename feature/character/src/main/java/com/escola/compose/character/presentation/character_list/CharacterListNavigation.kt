@@ -12,7 +12,7 @@ internal const val CHARACTER_LIST_ROUTE = "character_list_rout"
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal fun NavGraphBuilder.characterLisScreen(
-    navigationEvent: (CharacterListNavigationEvent) -> Unit,
+    navigationEvent: (CharacterListEffect) -> Unit,
     sharedTransitionScope: SharedTransitionScope
 ) {
     composable(CHARACTER_LIST_ROUTE) {

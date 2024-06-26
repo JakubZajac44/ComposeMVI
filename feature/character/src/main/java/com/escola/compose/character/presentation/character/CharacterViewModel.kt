@@ -2,23 +2,18 @@ package com.escola.compose.character.presentation.character
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.escola.compose.character.CharacterIdArgs
-import com.escola.compose.character.domain.model.CharacterDetailsModel
 import com.escola.compose.character.domain.model.EpisodeModel
 import com.escola.compose.character.domain.use_case.GetCharacterDetailsUseCase
 import com.escola.compose.character.domain.use_case.GetCharacterEpisodeUseCase
-import com.escola.compose.character.presentation.character_list.CharacterListEvent
 import com.escola.compose.resource.Resource
+import com.escola.compose.resource.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,18 +26,18 @@ class CharacterViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getCharacterDetailsUseCase: GetCharacterDetailsUseCase,
     private val getCharacterEpisodeUseCase: GetCharacterEpisodeUseCase,
-) : ViewModel() {
+) : BaseViewModel<CharacterState, CharacterEvent, CharacterEffect>(
+    initialState = CharacterState()
+) {
 
     private val args = CharacterIdArgs(savedStateHandle)
 
-    private var _state = MutableStateFlow(CharacterState())
-    val state = _state.asStateFlow()
 
     init {
         getCharacterDetails()
     }
 
-    fun setInitialData(id: String, name: String, imageUrl: String){
+    fun setInitialData(id: String, name: String, imageUrl: String) {
         _state.update {
             it.copy(
                 characterId = id,
@@ -52,15 +47,15 @@ class CharacterViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: CharacterEvent) {
+    override fun onEvent(event: CharacterEvent) {
         when (event) {
-            CharacterEvent.RefreshData ->  getCharacterDetails(true)
+            CharacterEvent.RefreshData -> getCharacterDetails(true)
         }
     }
 
 
     private fun getCharacterDetails(isRefreshing: Boolean = false) {
-        if(isRefreshing) _state.update {
+        if (isRefreshing) _state.update {
             it.copy(
                 isRefreshing = true
             )
@@ -118,20 +113,20 @@ class CharacterViewModel @Inject constructor(
             val mergedRequest = mutableListOf<Deferred<Flow<Resource<EpisodeModel>>>>()
 
             episodeIdList.forEach { id ->
-                val idd =  id.split("/").last()
+                val idd = id.split("/").last()
                 mergedRequest.add(async {
                     val response = getCharacterEpisodeUseCase.invoke(idd)
                     response
                 })
             }
             val listOfEpisode: MutableList<EpisodeModel> = mutableListOf()
-             mergedRequest.awaitAll().merge().collect{ result ->
-                 when(result){
-                     is Resource.Error -> {}
-                     is Resource.Loading -> {}
-                     is Resource.Success -> listOfEpisode.add(result.data)
-                 }
-             }
+            mergedRequest.awaitAll().merge().collect { result ->
+                when (result) {
+                    is Resource.Error -> {}
+                    is Resource.Loading -> {}
+                    is Resource.Success -> listOfEpisode.add(result.data)
+                }
+            }
 
             _state.update {
                 it.copy(
