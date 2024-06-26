@@ -7,11 +7,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.escola.compose.character.presentation.character.CHARACTER_ID
-import com.escola.compose.character.presentation.character.CharacterNavigationEvent
+import com.escola.compose.character.presentation.character.CharacterEffect
 import com.escola.compose.character.presentation.character.characterScreen
 import com.escola.compose.character.presentation.character.navigateToCharacterScreen
 import com.escola.compose.character.presentation.character_list.CHARACTER_LIST_ROUTE
-import com.escola.compose.character.presentation.character_list.CharacterListNavigationEvent
+import com.escola.compose.character.presentation.character_list.CharacterListEffect
 import com.escola.compose.character.presentation.character_list.characterLisScreen
 import java.net.URLEncoder
 
@@ -48,7 +48,7 @@ fun NavGraphBuilder.characterGraph(
         characterLisScreen(
             navigationEvent = { navigationEvent ->
                 when (navigationEvent) {
-                    is CharacterListNavigationEvent.OnCharacterDetailsClick -> {
+                    is CharacterListEffect.OnCharacterDetailsClick -> {
                         val encoded = URLEncoder.encode(navigationEvent.characterUrlImage, "UTF-8")
                         navController.navigateToCharacterScreen(
                             characterName = navigationEvent.characterName,
@@ -66,7 +66,7 @@ fun NavGraphBuilder.characterGraph(
             sharedTransitionScope = sharedTransitionScope,
             navigationEvent = { navigationEvent ->
                 when (navigationEvent) {
-                    is CharacterNavigationEvent.OnBackClick -> {
+                    is CharacterEffect.OnBackClick -> {
                         navController.navigateUp()
                     }
                 }

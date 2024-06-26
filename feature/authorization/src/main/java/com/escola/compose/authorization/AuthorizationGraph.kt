@@ -7,7 +7,8 @@ import androidx.navigation.navigation
 import com.escola.compose.authorization.presentation.forgot_password.forgotPasswordScreen
 import com.escola.compose.authorization.presentation.forgot_password.navigateToForgotPasswordScreen
 import com.escola.compose.authorization.presentation.login.LOGIN_ROUTE
-import com.escola.compose.authorization.presentation.login.LoginNavigationEvent
+import com.escola.compose.authorization.presentation.login.LoginEffect
+import com.escola.compose.authorization.presentation.login.LoginNavigation
 import com.escola.compose.authorization.presentation.login.loginScreen
 import com.escola.compose.authorization.presentation.registation.navigateToRegistrationScreen
 import com.escola.compose.authorization.presentation.registation.registrationScreen
@@ -27,10 +28,10 @@ fun NavGraphBuilder.authorizationGraph(
         loginScreen(
             navigationEvent = { navigationEvent ->
                 when (navigationEvent) {
-                    LoginNavigationEvent.ForgotPasswordClick -> navController.navigateToForgotPasswordScreen()
-                    LoginNavigationEvent.RegisterClick -> navController.navigateToRegistrationScreen()
-                    LoginNavigationEvent.RegulationClick -> navController.navigateToRegulationScreen()
-                    LoginNavigationEvent.NavigateToHome -> userLogged.invoke()
+                    LoginNavigation.ForgotPasswordClick -> navController.navigateToForgotPasswordScreen()
+                    LoginNavigation.RegisterClick -> navController.navigateToRegistrationScreen()
+                    LoginNavigation.RegulationClick -> navController.navigateToRegulationScreen()
+                    LoginNavigation.NavigateToHome -> userLogged.invoke()
                 }
             }
         )

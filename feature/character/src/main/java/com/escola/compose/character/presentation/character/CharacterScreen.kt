@@ -64,7 +64,7 @@ fun SharedTransitionScope.CharacterScreen(
     state: CharacterState,
     animatedVisibilityScope: AnimatedVisibilityScope,
     characterEvent: (CharacterEvent) -> Unit,
-    navigationEvent: (CharacterNavigationEvent) -> Unit,
+    navigationEvent: (CharacterEffect) -> Unit,
 ) {
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -148,7 +148,7 @@ fun SharedTransitionScope.CharacterScreen(
 
                     ) {
                         IconButton(onClick = {
-                            navigationEvent.invoke(CharacterNavigationEvent.OnBackClick)
+                            navigationEvent.invoke(CharacterEffect.OnBackClick)
                         }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
