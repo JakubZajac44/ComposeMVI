@@ -19,5 +19,6 @@ Feautres:
    
 Video of the application in action
 
-https://github.com/JakubZajac44/ComposeMVI/assets/34090166/e688f8ba-dd8c-4e35-906c-05cff24bb3e0
+https://github.com/JakubZajac44/ComposeMVI/assets/34090166/d09757ed-ec0d-4a2c-8260-690fbf679a80
+
 
