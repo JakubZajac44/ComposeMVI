@@ -17,6 +17,7 @@ Feautres:
 2. MVI pattern
 3. Clean Architecture
 4. Shimmer Effect
+5. Basic Animation
    
 Video of the application in action
 
