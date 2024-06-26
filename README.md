@@ -16,6 +16,7 @@ Feautres:
 1. Dark and light mode
 2. MVI pattern
 3. Clean Architecture
+4. Shimmer Effect
    
 Video of the application in action
 
